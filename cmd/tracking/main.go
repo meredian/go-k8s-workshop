@@ -14,6 +14,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("filet to get config: %v\n", err)
 	}
+	fmt.Printf("%+v", cfg)
 
 	tracking.Run(cfg)
 }

@@ -1,6 +1,5 @@
-APP?=workshop
+APP?=austin
 RELEASE?=0.0.1
-
 
 NAMESPACE?=workshop
 REGISTRY?=registry.k8s.gromnsk.ru

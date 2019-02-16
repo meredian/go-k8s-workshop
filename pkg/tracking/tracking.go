@@ -26,7 +26,7 @@ func Run(cfg *config.Config) {
 	}
 
 	// FIXME: HOST should be serviceNode.Address
-	hostport := fmt.Sprintf("%s:%d", "127.0.0.1", serviceNode.Port)
+	hostport := fmt.Sprintf("%s:%d", serviceNode.Address, serviceNode.Port)
 	keyspace := cfg.Storage.Keyspace
 	session, err := storage.InitStorage(hostport, keyspace)
 	if err != nil {
@@ -54,6 +54,9 @@ func Run(cfg *config.Config) {
 	http.HandleFunc("/get-status", server.GetActionStatusHandler)
 
 	http.HandleFunc("/healthz", server.HealthHandler)
+	http.HandleFunc("/readyz", server.ReadyzHandler)
+	http.HandleFunc("/", server.ReadyzHandler)
+
 	http.Handle("/metrics", promhttp.Handler())
 
 	fmt.Printf("Service starting on port %d..\n", cfg.Server.Port)
