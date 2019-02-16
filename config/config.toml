@@ -1,9 +1,11 @@
 [server]
-Host="127.0.0.1"
+# IP of host machine, because localhost is not
+# visible from Docker container
+Host="10.51.0.184"
 Port=8084
 
 [consul]
-hostport="consul:8500"
+hostport="127.0.0.1:8500"
 ttl="5s"
 servicename="TrackingService"
 

@@ -22,8 +22,8 @@ type Action struct {
 	Timestamp time.Time `json:"timestamp,-,omitempty"`
 }
 
-func httpErr(w http.ResponseWriter, code int, err interface{}) {
-	log.Println(err)
+func httpErr(w http.ResponseWriter, code int, err error) {
+	log.Printf("Error while processing request: %v\n", err)
 	w.WriteHeader(code)
 	w.Write([]byte(fmt.Sprintf(`Error: %v`, err)))
 }
