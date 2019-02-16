@@ -1,0 +1,64 @@
+{{- $serviceName := .Values.service.name -}}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "name" . }}
+  labels:
+    app: {{ template "fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "{{ .Values.service.name }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}
+    spec:
+      {{- if .Values.image.pullSecretName }}
+      imagePullSecrets:
+      - name: {{ .Values.image.pullSecretName }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.registry }}/{{ .Values.image.group }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+         {{- range .Values.externalServices }}
+          {{- $name := .name }}
+          {{- range $key, $value := . }}
+            {{- if ne $key "secrets" }}
+        - name: {{ printf "%s_%s_%s" $serviceName $name $key | upper }}
+          value: "{{ $value }}"
+            {{- end }}
+          {{- end }}
+          {{- range .secrets }}
+        - name: {{ printf "%s_%s_%s" .Values.service.name .name .type | upper }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .name }}
+              key: {{ .key }}
+          {{- end }}
+         {{- end }}
+
+        ports:
+        - containerPort: {{ .Values.service.internalPort }}
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: {{ .Values.service.internalPort }}
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: {{ .Values.service.internalPort }}
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+      volumes:
+      {{- range .Values.volumes }}
+      - name: {{ .name }}
+        secret:
+          secretName: {{ $.Release.Namespace }}.{{ .secret }}
+          defaultMode: 0600
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.gracePeriod }}

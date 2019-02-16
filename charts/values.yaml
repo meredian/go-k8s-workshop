@@ -1,0 +1,52 @@
+replicaCount: 3
+
+workflow: workshop
+
+image:
+  registry: registry.k8s.gromnsk.ru
+  group: workshop
+  name: workshop
+  tag: 0.0.1
+
+  pullSecretName: registry-pull-secret
+
+  pullPolicy: Always
+
+ingress:
+  enabled: true
+
+  hostBased:
+    hosts:
+      - workshop.k8s.gromnsk.ru
+
+    tls:
+      - secretName: wildcard-certificate
+        hosts:
+          - workshop.k8s.gromnsk.ru
+
+service:
+  name: workshop
+
+  type: ClusterIP
+
+  externalPort: 80
+  internalPort: 8084
+
+
+externalServices:
+  - name: consul
+    serviceName: trackingService
+    ttl: 5s
+    hostport: consul-server.workshop:8500
+  - name: storage
+    host: cassandra.k8s.gromnsk.ru
+    port: 9042
+    keyspace: tracking
+
+resources:
+  limits:
+    cpu: 10m
+    memory: 30Mi
+  requests:
+    cpu: 10m
+    memory: 30Mi
