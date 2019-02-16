@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/consul/api"
+	"gitlab.k8s.gromnsk.ru/workshop/austin/pkg/config"
 )
 
 type ServiceNode struct {
@@ -47,7 +48,7 @@ func GetServiceNode(consulClient *api.Client, serviceName string) (*ServiceNode,
 func RegisterService(consulClient *api.Client, cfg *config.Config) error {
 	err := consulClient.Agent().ServiceRegister(&api.AgentServiceRegistration{
 		ID:      getServiceID(cfg.Consul.Servicename, cfg.Server.Host),
-		Name:    cfg.Consul.ServiceName,
+		Name:    cfg.Consul.Servicename,
 		Address: cfg.Server.Host,
 		Port:    cfg.Server.Port,
 	})

@@ -6,6 +6,8 @@ import (
 	"log"
 
 	"github.com/gocql/gocql"
+	"gitlab.k8s.gromnsk.ru/workshop/austin/migrations"
+	"gitlab.k8s.gromnsk.ru/workshop/austin/pkg/config"
 )
 
 // RUN ./migrator -table=tracking

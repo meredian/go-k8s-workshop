@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"gitlab.k8s.gromnsk.ru/workshop/austin/pkg/config"
+	"gitlab.k8s.gromnsk.ru/workshop/austin/pkg/handlers"
 )
 
 func Run(cfg *config.Config) {
