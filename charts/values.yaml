@@ -8,7 +8,7 @@ image:
   name: austin
   tag: 0.0.1
 
-  pullSecretName: registry-pull-secret
+  pullSecretName: registry-austin
 
   pullPolicy: Always
 
