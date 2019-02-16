@@ -11,3 +11,7 @@ var Timings = prometheus.NewSummaryVec(prometheus.SummaryOpts{
 	Name: "http_requests_duration",
 	Help: "requests duration",
 }, []string{"messageID"})
+
+func RegisterMetrics() {
+	prometheus.MustRegister(Counter, Timings)
+}

@@ -62,6 +62,8 @@ func (s *Server) GetActionStatusHandler(w http.ResponseWriter, r *http.Request) 
 	messageID := queryString.Get("message_id")
 	userID := queryString.Get("user_id")
 
+	start := time.Now()
+
 	fmt.Printf("message_id: %v, user_id: %v\n", messageID, userID)
 
 	var status string
@@ -82,4 +84,7 @@ func (s *Server) GetActionStatusHandler(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(200)
 	w.Header().Add("Content-Type", "application/json;charset=utf-8")
 	w.Write([]byte(fmt.Sprintf(`{"result":"%s"}`, status)))
+
+	Counter.WithLabelValues(messageID).Inc()
+	Timings.WithLabelValues(messageID).Observe(time.Since(start).Seconds())
 }

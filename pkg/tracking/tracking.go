@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gitlab.k8s.gromnsk.ru/workshop/austin/pkg/discovery"
 
 	"gitlab.k8s.gromnsk.ru/workshop/austin/pkg/config"
@@ -47,10 +48,13 @@ func Run(cfg *config.Config) {
 		}
 	}()
 
+	handlers.RegisterMetrics()
+
 	http.HandleFunc("/save", server.SaveActionHandler)
 	http.HandleFunc("/get-status", server.GetActionStatusHandler)
 
 	http.HandleFunc("/healthz", server.HealthHandler)
+	http.Handle("/metrics", promhttp.Handler())
 
 	fmt.Printf("Service starting on port %d..\n", cfg.Server.Port)
 	err = http.ListenAndServe(fmt.Sprintf(":%d", cfg.Server.Port), nil)
