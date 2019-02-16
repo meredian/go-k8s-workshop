@@ -4,17 +4,28 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
+
+	"github.com/gocql/gocql"
 )
 
-type Server struct{}
+type Server struct {
+	Session *gocql.Session
+}
 
 type Action struct {
 	MessageID string    `json:"message_id,-,omitempty"`
 	UserID    string    `json:"user_id,-,omitempty"`
 	Status    string    `json:"status,-,omitempty"`
 	Timestamp time.Time `json:"timestamp,-,omitempty"`
+}
+
+func httpErr(w http.ResponseWriter, code int, err interface{}) {
+	log.Println(err)
+	w.WriteHeader(code)
+	w.Write([]byte(fmt.Sprintf(`Error: %v`, err)))
 }
 
 func (s *Server) SaveActionHandler(w http.ResponseWriter, r *http.Request) {
@@ -32,6 +43,15 @@ func (s *Server) SaveActionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = s.Session.Query(
+		`INSERT INTO tracking (messageID, userID, status, timestamp) VALUES (?, ?, ?, ?);`,
+		action.MessageID, action.UserID, action.Status, time.Now(),
+	).Exec()
+	if err != nil {
+		httpErr(w, 500, err)
+		return
+	}
+
 	w.WriteHeader(201)
 	w.Header().Add("Content-Type", "application/json;charset=utf-8")
 	w.Write([]byte(`{"result":"ok"}`))
@@ -44,7 +64,22 @@ func (s *Server) GetActionStatusHandler(w http.ResponseWriter, r *http.Request) 
 
 	fmt.Printf("message_id: %v, user_id: %v\n", messageID, userID)
 
+	var status string
+	err := s.Session.Query(
+		`SELECT status FROM tracking where messageID = ? and userID = ?`,
+		messageID, userID,
+	).Scan(&status)
+
+	if err == gocql.ErrNotFound {
+		w.WriteHeader(404)
+		return
+	}
+	if err != nil {
+		httpErr(w, 500, err)
+		return
+	}
+
 	w.WriteHeader(200)
 	w.Header().Add("Content-Type", "application/json;charset=utf-8")
-	w.Write([]byte(fmt.Sprintf(`{"result":"%s"}`, "")))
+	w.Write([]byte(fmt.Sprintf(`{"result":"%s"}`, status)))
 }
