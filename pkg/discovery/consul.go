@@ -51,6 +51,10 @@ func RegisterService(consulClient *api.Client, cfg *config.Config) error {
 		Name:    cfg.Consul.Servicename,
 		Address: cfg.Server.Host,
 		Port:    cfg.Server.Port,
+		Check: &api.AgentServiceCheck{
+			HTTP:     fmt.Sprintf("http://%s:%d/healthz", cfg.Server.Host, cfg.Server.Port),
+			Interval: cfg.Consul.Ttl,
+		},
 	})
 
 	if err != nil {
