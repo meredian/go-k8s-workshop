@@ -5,7 +5,7 @@ workflow: workshop
 image:
   registry: registry.k8s.gromnsk.ru
   group: workshop
-  name: workshop
+  name: austin
   tag: 0.0.1
 
   pullSecretName: registry-pull-secret
@@ -17,15 +17,15 @@ ingress:
 
   hostBased:
     hosts:
-      - workshop.k8s.gromnsk.ru
+      - austin.k8s.gromnsk.ru
 
     tls:
       - secretName: wildcard-certificate
         hosts:
-          - workshop.k8s.gromnsk.ru
+          - austin.k8s.gromnsk.ru
 
 service:
-  name: workshop
+  name: austin
 
   type: ClusterIP
 
