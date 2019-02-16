@@ -38,8 +38,8 @@ spec:
   {{- if eq $namespace $workflow }}
   {{- if .Values.ingress.hostBased }}
   {{- if .Values.ingress.hostBased.tls }}
-  {{ toYaml .Values.ingress.hostBased.tls | indent 2 }}
+{{ toYaml .Values.ingress.hostBased.tls | indent 2 }}
   {{- end -}}
   {{- end -}}
   {{- end }}
-  {{- end -}}
+{{- end -}}
