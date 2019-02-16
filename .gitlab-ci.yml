@@ -638,7 +638,7 @@ rollout 100%:
       kubectl rollout status -n "$KUBE_NAMESPACE" -w "deployment/$CI_PROJECT_NAME"
     else
       echo "Deploying new dev release $CI_PROJECT_NAME-$CI_ENVIRONMENT_SLUG..."
-      helm upgrade ${CI_PROJECT_NAME}-$CI_ENVIRONMENT_SLUG} \
+      helm upgrade ${CI_PROJECT_NAME}-{$CI_ENVIRONMENT_SLUG} \
         -f charts/values.yaml charts \
         --install --wait --namespace=${KUBE_NAMESPACE} \
         --set image.tag="$CI_APPLICATION_TAG" \

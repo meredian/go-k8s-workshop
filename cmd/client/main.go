@@ -25,7 +25,7 @@ func main() {
 
 func makeRequest(i int) {
 	client := http.Client{}
-	response, err := client.Get("http://127.0.0.1:8084/get-status?message_id=ABCDE&user_id=user")
+	response, err := client.Get("https://austin.k8s.gromnsk.ru/get-status?message_id=ABCDE&user_id=user")
 	if err != nil {
 		log.Fatalf("failed to get a http request: %v\n", err)
 	}
